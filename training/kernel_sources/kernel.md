@@ -3,19 +3,18 @@
 
 ## The TCP/IP stack
 
-The TCP/IP model had been created as a more light weight and flexible model which would more closely resemble the real life networking protocols. Because of this the kernel code which handles networking had been called the TCP/IP stack.
+The TCP/IP model had been created as a more light weight and flexible model which would more closely resemble the real life networking protocols. Because of this the kernel code which handles networking had been called the TCP/IP stack. All kernel networking functionality is handled by the TCP/IP stack.
 
 The kernel TCP/IP stack implementation consists of:
 
-- Protocol implementation, which handles TCP, IP, ICMP, UDP, ARP and etc.
 - Socket interface which allows applications to communicate with the TCP/IP stack over system calls.
+- Protocol implementation, which handles TCP, IP, ICMP, UDP, ARP and etc.
 - Routing and forwarding packets.
+- Netfilter.
 - Fragmentation and error handling.
-- Communicating with the network hardware.
+- Communicating with the network hardware drivers.
 
-Basically all networking functionality of the kernel is part of the TCP/IP stack.
-
-However there are standalone TCP/IP stacks used in embedded systems for example. In fact the Linux kernel can be compiled without networking support.
+>NOTE: There are standalone TCP/IP stacks for example to be used in embedded systems. In fact the Linux kernel can be compiled without networking support.
 
 ### Inbound Packet Flow
 
@@ -81,7 +80,9 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 
 Another example of a useful parameter is enabling packet capture on loopback devices:
 
+```
 sysctl -w net.ipv4.tcp_dump_lo=1
+```
 
 >NOTE: In reality both these parameters were already set to enable so we didn't have to change them, but they can be disabled for "kernel security hardening".
 
@@ -94,11 +95,11 @@ sysctl net.ipv6.conf.default.disable_ipv6=1
 
 ### Network Memory
 
-Various kernel parameters control the network memory sizes. For example net.core.rmem_max parameter describes the receive socket buffer size that can be allocated system wide. net.core.wmem_max is the same, but for the send socket buffer. net.core.rmem_default on the other hand specifies how much memory should be allocated to the receive socket buffer at creation to avoid reallocations.
+Various kernel parameters control the network memory sizes. For example net.core.rmem_max parameter describes the receive socket buffer size that can be allocated system wide. net.core.wmem_max is the same, but for the send socket buffer. net.core.rmem_default on the other hand specifies how much memory should be allocated to the receive socket buffer at creation to avoid reallocations. net.core.somaxconn on the other hands defines the maximum number of connections that can be queued by the operating system for a listening socket.
 
 ### TCP
 
-net.ipv4.tcp_rmem and net.ipv4.tcp_wmem are parameters that control the TCP receive and send buffer sizes respectively, while net.ipv4.tcp_mem controls overall TCP memory usage. net.ipv4.tcp_max_syn_backlog  controls the maximum number of TCP SYN requests that can be pending simultaneously, net.core.somaxconn controls the maximum number of incomplete (half-open) connections and net.ipv4.tcp_max_orphans controls the maximum number of connections waiting in the completed connection queue.
+net.ipv4.tcp_rmem and net.ipv4.tcp_wmem are parameters that control the TCP receive and send buffer sizes respectively, while net.ipv4.tcp_mem controls overall TCP memory usage. net.ipv4.tcp_max_syn_backlog controls the maximum number of TCP SYN requests that can be pending simultaneously, net.ipv4.tcp_max_orphans controls the maximum number of connections waiting in the completed connection queue.
 
 >NOTE: As these parameters can mess up the internet connection, the associated exercise for this task is left for homework ;)
 
@@ -148,7 +149,7 @@ Try and mess with the memory related kernel options to cause a kernel panic. For
 
 >NOTE: Older systems use `iptables` and newer systems use `nftables` under the hood, but the syntax may differ slightly so don't be too surprised if the same command works on your host, but not a docker container.
 
-### Extra Homework
+### Optional Homework
 
 Do the same exercise, but instead of configuring a filter for simulating faulty routing, setup libtelio to work as a VPN and see the results.
 
